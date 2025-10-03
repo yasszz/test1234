@@ -44,15 +44,23 @@ jobs:
       - name: Install dependencies for dottorrent-cli
         run: pip install cython
         
-      - name: Install dottorrent-cli
-        run: pipx install dottorrent-cli
+      - name: Create virtual environment and install dottorrent-cli
+        run: |
+          python3 -m venv dottorrent-env
+          source dottorrent-env/bin/activate
+          pip install --upgrade pip setuptools wheel
+          pip install cython
+          pip install dottorrent-cli
+
         
       - name: Download file
         run: aria2c -x 16 -o "${{ inputs.file_name }}" "${{ inputs.url }}"
         
       - name: Create torrent using dottorrent-cli
-        run: dottorrent --web_seed "${{ inputs.url }}" --source "torrent-webseed-creator" --comment "${{ inputs.comment }}" "${{ inputs.file_name }}" "${{ inputs.name }}.torrent"
-        
+        run: |
+          source dottorrent-env/bin/activate
+          dottorrent --web_seed "${{ inputs.url }}" --source "torrent-webseed-creator" --comment "${{ inputs.comment }}" "${{ inputs.file_name }}" "${{ inputs.name }}.torrent"
+
       - name: Upload torrent file
         uses: actions/upload-artifact@v4
         with:
