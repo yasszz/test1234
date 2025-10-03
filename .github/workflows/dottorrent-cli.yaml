@@ -35,7 +35,9 @@ jobs:
           remove-haskell: true
           remove-codeql: true
           remove-docker-images: true
-          
+      - name: Install dependencies for dottorrent-cli
+        run: pip install cython
+        
       - name: Install dottorrent-cli
         run: pipx install dottorrent-cli
         
